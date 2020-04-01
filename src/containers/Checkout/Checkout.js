@@ -9,8 +9,9 @@ export class Checkout extends Component {
     price: 0
   };
 
-  componentWillMount() {
-    const query = new URLSearchParams(this.props.location.search);
+  constructor(props) {
+    super(props);
+    const query = new URLSearchParams(props.location.search);
     const ingredients = {};
     let price = 0;
     for (let param of query.entries()) {
@@ -21,7 +22,10 @@ export class Checkout extends Component {
         ingredients[param[0]] = +param[1];
       }
     }
-    this.setState({ ingredients: ingredients, totalPrice: price });
+    this.state = {
+      ingredients: ingredients,
+      totalPrice: price
+    };
   }
 
   checkoutCancelledHandler = () => {
