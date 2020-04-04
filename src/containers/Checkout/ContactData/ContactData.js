@@ -4,6 +4,7 @@ import classes from "./ContactData.module.css";
 import Axios from "../../../axios-orders";
 import Spinner from "../../../components/UI/Spinner/Spinner";
 import Input from "../../../components/UI/Input/Input";
+import { connect } from "react-redux";
 
 export class ContactData extends Component {
   state = {
@@ -12,96 +13,95 @@ export class ContactData extends Component {
         elementType: "input",
         elementConfig: {
           type: "text",
-          placeholder: "Your name"
+          placeholder: "Your name",
         },
         value: "",
         validation: {
-          required: true
+          required: true,
         },
         valid: false,
         touched: false,
-        errorMessage: []
+        errorMessage: [],
       },
       street: {
         elementType: "input",
         elementConfig: {
           type: "text",
-          placeholder: "Street"
+          placeholder: "Street",
         },
         value: "",
         validation: {
-          required: true
+          required: true,
         },
         valid: false,
         touched: false,
-        errorMessage: []
+        errorMessage: [],
       },
       zipCode: {
         elementType: "input",
         elementConfig: {
           type: "text",
-          placeholder: "Zip Code"
+          placeholder: "Zip Code",
         },
         value: "",
         validation: {
           required: true,
           minLength: 5,
-          maxLength: 5
+          maxLength: 5,
         },
         valid: false,
         touched: false,
-        errorMessage: []
+        errorMessage: [],
       },
       country: {
         elementType: "input",
         elementConfig: {
           type: "text",
-          placeholder: "Country"
+          placeholder: "Country",
         },
         value: "",
         validation: {
-          required: true
+          required: true,
         },
         valid: false,
         touched: false,
-        errorMessage: []
+        errorMessage: [],
       },
       email: {
         elementType: "input",
         elementConfig: {
           type: "email",
-          placeholder: "your@email.com"
+          placeholder: "your@email.com",
         },
         value: "",
         validation: {
-          required: true
+          required: true,
         },
         valid: false,
         touched: false,
-        errorMessage: []
+        errorMessage: [],
       },
       deliveryMethod: {
         elementType: "select",
         elementConfig: {
           options: [
             { value: "fastest", displayValue: "Fastest" },
-            { value: "cheapest", displayValue: "Cheapest" }
-          ]
+            { value: "cheapest", displayValue: "Cheapest" },
+          ],
         },
         value: "fastest",
         validation: {},
         valid: true,
         touched: false,
-        errorMessage: []
-      }
+        errorMessage: [],
+      },
     },
     formIsValid: false,
-    loading: false
+    loading: false,
   };
 
-  orderHandler = event => {
+  orderHandler = (event) => {
     event.preventDefault();
-    console.log(this.props.ingredients);
     this.setState({ loading: true });
     const formData = {};
     for (const formElementIdentifier in this.state.orderForm) {
@@ -112,14 +112,14 @@ export class ContactData extends Component {
     const order = {
       ingredients: this.props.ingredients,
       price: this.props.price, // should be server side
-      orderData: formData
+      orderData: formData,
     };
     Axios.post("/orders.json", order)
-      .then(response => {
+      .then((response) => {
         this.setState({ loading: false });
         this.props.history.push("/");
       })
-      .catch(error => {
+      .catch((error) => {
         console.log("error", error);
         this.setState({ loading: false });
       });
@@ -156,10 +156,10 @@ export class ContactData extends Component {
   inputChangedHandler = (event, inputIdentifier) => {
     // console.log(event.target.value);
     const updatedOrderForm = {
-      ...this.state.orderForm
+      ...this.state.orderForm,
     };
     const updatedFormElement = {
-      ...updatedOrderForm[inputIdentifier]
+      ...updatedOrderForm[inputIdentifier],
     };
     updatedFormElement.value = event.target.value;
     updatedFormElement.valid = this.checkValidity(
@@ -184,13 +184,13 @@ export class ContactData extends Component {
     for (const key in this.state.orderForm) {
       formElementsArray.push({
         id: key,
-        config: this.state.orderForm[key]
+        config: this.state.orderForm[key],
       });
     }
 
     let form = (
       <form onSubmit={this.orderHandler}>
-        {formElementsArray.map(formElement => (
+        {formElementsArray.map((formElement) => (
           <Input
             key={formElement.id}
             elementType={formElement.config.elementType}
@@ -200,7 +200,7 @@ export class ContactData extends Component {
             shouldValidate={formElement.config.validation}
             touched={formElement.config.touched}
             errorMessage={formElement.config.errorMessage}
-            changed={event => this.inputChangedHandler(event, formElement.id)}
+            changed={(event) => this.inputChangedHandler(event, formElement.id)}
           ></Input>
         ))}
         <Button btnType="Success" disabled={!this.state.formIsValid}>
@@ -221,4 +221,11 @@ export class ContactData extends Component {
   }
 }
 
-export default ContactData;
+const mapStateToProps = (state) => {
+  return {
+    ingredients: state.ingredients,
+    price: state.totalPrice,
+  };
+};
+
+export default connect(mapStateToProps)(ContactData);
